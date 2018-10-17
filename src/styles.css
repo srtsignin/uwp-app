@@ -1,4 +1,9 @@
 /* You can add global styles to this file, and also import other style files */
+
+mat-toolbar {
+  -webkit-app-region: drag;
+}
+
 body {
   margin: 0;
   height: 100vh;
