@@ -3,6 +3,15 @@ const path = require("path");
 const url = require("url");
 require('rosefire');
 
+// const pcsc = require('pcsclite')();
+// const PCSCAdapter = require('@srtsignin/pcsc-adapter');
+
+// const adapter = new PCSCAdapter(pcsc);
+
+// adapter.subscribe((err, data) => {
+//   console.log(data);
+// });
+
 let win;
 
 function createWindow() {
