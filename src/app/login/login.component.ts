@@ -14,7 +14,7 @@ export class LoginComponent implements OnInit {
   }
 
   public handleLogin() {
-    this.loginService.login();
+    this.loginService.rosefireLogin();
   }
 
 }

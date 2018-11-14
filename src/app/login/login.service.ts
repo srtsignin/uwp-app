@@ -1,8 +1,9 @@
-import { Injectable } from '@angular/core';
+import { Injectable, NgZone } from '@angular/core';
 import { Router } from '@angular/router';
 import { BehaviorSubject, PartialObserver  } from 'rxjs';
 
 import { RosefireAdapterService } from '../rosefire-adapter/rosefire-adapter.service';
+import { CardfireAdapterService } from '../cardfire-adapter/cardfire-adapter.service';
 import { RolesAdapterService } from '../roles-adapter/roles-adapter.service';
 import { UserBuilder } from '../model/user-builder';
 import { User } from '../model/user';
@@ -17,9 +18,11 @@ export class LoginService {
 
   constructor(private rosefireAdapterService: RosefireAdapterService,
     private rolesAdapterService: RolesAdapterService,
-    private router: Router) { }
+    private cardfireAdapterService: CardfireAdapterService,
+    private router: Router,
+    private zone: NgZone) { }
 
-  public login() {
+  public rosefireLogin() {
     this.rosefireAdapterService.signIn().then(([userBuilder, authToken]) => {
       return this.rolesAdapterService.populateRoles(userBuilder, authToken);
     }).then((userBuilder: UserBuilder) => {
@@ -27,6 +30,37 @@ export class LoginService {
       this.signedIn.next(true);
       this.router.navigate(['/student']);
     });
+  }
+
+  public cardfireLogin(cardUID) {
+    this.cardfireAdapterService.signIn(cardUID)
+      .then(([err, userBuilder, cardToken]) => {
+        if (err) {
+          return new Promise((resolve, reject) => {
+              this.rosefireAdapterService.signIn()
+              .then(([userBuilder, rosefireToken]) => {
+                this.cardfireAdapterService.registerCard(rosefireToken, cardUID)
+                  .subscribe(next => {
+                    resolve([userBuilder, cardUID]);
+                  }, error => {
+                    console.log(error);
+                  });
+              });
+          });
+        } 
+        return Promise.resolve([userBuilder, cardToken]);
+      })
+      .then(([userBuilder, authToken]) => {
+        return this.rolesAdapterService.populateRoles(userBuilder, authToken);
+      })
+      .then(userBuilder => {
+        this.user = userBuilder.build();
+        console.log(`User: [${this.user.fullname} ${this.user.roles} ${this.user.token} ${this.user.username}]`);
+        this.signedIn.next(true);
+        this.zone.run(() => {
+          this.router.navigate(['/student']);
+        })
+      });
   }
 
   public logout() {

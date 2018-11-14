@@ -24,8 +24,6 @@ mat-card-content {
 
 .last .add-course {
   visibility: visible;
-  background: #33cc33;
-  margin: 0 0 0 2em;
 }
 
 textarea {
@@ -40,13 +38,4 @@ textarea {
 
 .classSelection {
   max-width: 150px;
-}
-
-.button-row {
-  display: flex;
-  flex-direction: row;
-}
-
-.fill-space {
-  flex: 1 1 auto;
 }

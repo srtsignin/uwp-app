@@ -17,7 +17,10 @@ export class RolesAdapterService {
 
   public populateRoles(userBuilder: UserBuilder, token: string): Promise<UserBuilder> {
     return new Promise((resolve, reject) => {
+      console.log(`Getting roles for ${token}`);
       this.getRoles(token).subscribe((rolesResponse: any) => {
+        console.log(`Roles response: ${rolesResponse.message}`);
+        console.log(`Roles: ${rolesResponse.roles}`)
         resolve(userBuilder.roles(rolesResponse.roles));
       }, reject);
     });
